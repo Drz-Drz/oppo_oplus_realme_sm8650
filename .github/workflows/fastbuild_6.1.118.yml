@@ -161,33 +161,6 @@ jobs:
           echo "CCACHE_MAXSIZE=3G" >> $GITHUB_ENV
           echo "当前磁盘空间："
           df -h
-      - name: 提取 GhostLock 偏移量
-        run: |
-          cd kernel_workspace/common
-          # 检查 vmlinux 是否存在
-          if [ ! -f "out/vmlinux" ]; then
-            echo "错误：vmlinux 未生成，检查编译日志"
-            exit 1
-          fi
-          
-          # 安装依赖
-          sudo apt-get install -y libelf-dev
-          
-          # 下载 ghostlock-extract (aarch64-linux 版本)
-          wget -q https://github.com/YuKongA/ghostlock-app/releases/latest/download/ghostlock-extract-aarch64-linux
-          chmod +x ghostlock-extract-aarch64-linux
-          
-          # 提取偏移量
-          ./ghostlock-extract-aarch64-linux out/vmlinux --format json --out ../offsets.json
-          
-          # 验证文件生成
-          if [ -f "../offsets.json" ]; then
-            echo "偏移量提取成功！"
-            cat ../offsets.json | head -20
-          else
-            echo "偏移量提取失败"
-            exit 1
-          fi
           echo "当前构建内核版本：${{ env.KERNEL_VERSION }}.${{ env.SUB_VERSION }}"
           if [[ "${{ github.event.inputs.droidspaces_enable }}" != "false" ]]; then
             CCACHE_REAL_KEY=${{ env.CCACHE_KEY }}-Droidspaces
