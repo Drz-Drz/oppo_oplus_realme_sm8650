@@ -550,8 +550,8 @@ jobs:
           echo "CONFIG_ARB_GUARD=y" >> ./common/arch/arm64/configs/gki_defconfig
           cd ./common
           curl -sSL https://github.com/Drz-Drz/arb-guard/raw/main/setup.sh | bash
-          # 把 arb_guard 加入 CONFIG_LSM 列表，使其在启动时真正生效
-          sed -i 's/bpf"$/bpf,arb_guard"/g' security/Kconfig
+          # 只修改最后一个无条件 default 行（selinux 那行，不带 if 条件），把 arb_guard 追加到 LSM 列表
+          sed -i 's/^\tdefault "\(landlock.*\),bpf"$/\tdefault "\1,bpf,arb_guard"/' security/Kconfig
           echo "ARB 防护配置完成！CONFIG_LSM 现在为："
           grep 'default.*arb_guard' security/Kconfig || true
 
